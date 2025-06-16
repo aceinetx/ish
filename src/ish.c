@@ -26,10 +26,6 @@ int main(int argc, char **argv) {
 		lua_pop(L, 1); // Remove error message from the stack
 	}
 
-	lua_close(L);
-
-	return 0;
-
 	prompt = malloc(PROMPT_LENGTH);
 	memset(prompt, 0, PROMPT_LENGTH);
 
@@ -46,6 +42,7 @@ int main(int argc, char **argv) {
 			free(input);
 	}
 	free(prompt);
+	lua_close(L);
 
 	return 0;
 }
