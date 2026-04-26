@@ -1,15 +1,13 @@
 #include "ish.h"
 #include "arena.h"
 #include "util.h"
-#include <stdatomic.h>
-#include <stdbool.h>
-/* clang-format off */
-#include <stdio.h>
-#include <readline/readline.h>
-/* clang-format on */
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
+#include <readline/readline.h>
+#include <stdatomic.h>
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -63,8 +61,6 @@ void Ish_reload_config(Ish *ish) {
 void Ish_shell_main(Ish *ish) {
 	bool flag = true;
 	while (flag) {
-		char cwd[512];
-		getcwd(cwd, sizeof(cwd));
 		const char *prompt = Ish_get_prompt(ish);
 
 		char *input = readline(prompt);
