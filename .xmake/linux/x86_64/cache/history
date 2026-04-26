@@ -1,0 +1,10 @@
+{
+    cmdlines = {
+        "xmake lua /usr/share/xmake/modules/private/utils/statistics.lua",
+        "xmake run",
+        "xmake run",
+        "xmake run",
+        "xmake run",
+        "xmake run"
+    }
+}

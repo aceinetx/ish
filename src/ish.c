@@ -10,12 +10,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-char *prompt = NULL;
-char *input = NULL;
-bool running = true;
+#define PROMPT_LENGTH 512
 
 int main(int argc, char **argv) {
-	char cwd[255];
+	char cwd[512];
 
 	lua_State *L = luaL_newstate();
 	luaL_openlibs(L);
@@ -26,22 +24,22 @@ int main(int argc, char **argv) {
 		lua_pop(L, 1); // Remove error message from the stack
 	}
 
-	prompt = malloc(PROMPT_LENGTH);
-	memset(prompt, 0, PROMPT_LENGTH);
+	char prompt[PROMPT_LENGTH] = {0};
 
-	while (running) {
+	bool flag = true;
+	while (flag) {
 		getcwd(cwd, sizeof(cwd));
 		snprintf(prompt, PROMPT_LENGTH, "ish %s $ ", cwd);
 
-		input = readline(prompt);
+		char *input = readline(prompt);
 		if (strcmp(input, "exit") == 0) {
-			running = false;
+			flag = false;
 		}
 
 		if (input)
 			free(input);
 	}
-	free(prompt);
+
 	lua_close(L);
 
 	return 0;

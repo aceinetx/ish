@@ -1,6 +1,9 @@
+#include "execute.h"
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
-void execute(char **args) {
+void ish_execute(char **args) {
 	pid_t pid = fork();
 	if (pid < 0) {
 		return;

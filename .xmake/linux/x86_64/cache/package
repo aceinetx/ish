@@ -1,0 +1,42 @@
+{
+    lua = {
+        links = {
+            "lua++",
+            "lua",
+            "m"
+        },
+        version = "5.5.0",
+        __enabled = true,
+        envs = {
+            PATH = {
+                "/home/aceinet/.xmake/packages/l/lua/v5.5.0/e03d8527a70046cdaac93b8a6fbd8e10/bin"
+            }
+        },
+        libfiles = {
+            "/usr/lib/liblua++.so",
+            "/usr/lib/liblua++5.5.so",
+            "/usr/lib/liblua.so",
+            "/usr/lib/liblua5.5.so"
+        },
+        shared = true,
+        __requirestr = "lua"
+    },
+    readline = {
+        links = {
+            "readline",
+            "ncursesw"
+        },
+        version = "8.3",
+        __enabled = true,
+        defines = {
+            "_DEFAULT_SOURCE",
+            "_XOPEN_SOURCE=600"
+        },
+        shared = true,
+        libfiles = {
+            "/usr/lib/libreadline.so",
+            "/usr/lib/libncursesw.so"
+        },
+        __requirestr = "readline"
+    }
+}
