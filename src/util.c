@@ -1,6 +1,7 @@
 #include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 char *ish_fs_read(const char *filename, long *outSize) {
 	FILE *file;
@@ -46,4 +47,15 @@ char *ish_fs_read(const char *filename, long *outSize) {
 	}
 
 	return buffer;
+}
+
+char *ish_strcat_alloc(const char *s, const char *other) {
+	size_t size = strlen(s);
+	size_t other_size = strlen(other);
+	size_t new_size = size + other_size + 1;
+	char *new = malloc(new_size);
+	new[new_size - 1] = 0;
+	memcpy(new, s, size);
+	memcpy(new + size, other, other_size);
+	return new;
 }

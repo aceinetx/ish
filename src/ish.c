@@ -1,46 +1,94 @@
+#include "ish.h"
+#include "arena.h"
+#include "util.h"
+#include <stdatomic.h>
+#include <stdbool.h>
 /* clang-format off */
 #include <stdio.h>
 #include <readline/readline.h>
 /* clang-format on */
-#include <ish.h>
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#define PROMPT_LENGTH 512
+Ish Ish_new() {
+	Ish ish = (Ish){.L = NULL};
+	Ish_reload_config(&ish);
+	return ish;
+}
 
-int main(int argc, char **argv) {
-	char cwd[512];
+const char *Ish_get_prompt(Ish *ish) {
+	const char *prompt = NULL;
+	lua_getglobal(ish->L, "prompt");
+	if (lua_isnil(ish->L, 1)) {
+		prompt = "$ ";
+	} else {
+		lua_call(ish->L, 0, 1);
+		prompt = lua_tostring(ish->L, lua_gettop(ish->L));
+		lua_pop(ish->L, 1);
+	}
+	return prompt;
+}
+void Ish_lua_run(Ish *ish, const char *code) {
+	if (luaL_dostring(ish->L, code) != LUA_OK) {
+		fprintf(stderr, "lua error: %s\n", lua_tostring(ish->L, -1));
+		lua_pop(ish->L, 1); // Remove error message from the stack
+	}
+}
 
-	lua_State *L = luaL_newstate();
-	luaL_openlibs(L);
+void Ish_reload_config(Ish *ish) {
+	if (ish->L)
+		lua_close(ish->L);
+	ish->L = luaL_newstate();
+	luaL_openlibs(ish->L);
 
-	const char *lua_code = "print('Hello from Lua!')";
-	if (luaL_dostring(L, lua_code) != LUA_OK) {
-		fprintf(stderr, "Error: %s\n", lua_tostring(L, -1));
-		lua_pop(L, 1); // Remove error message from the stack
+	const char *lua_code = "function prompt() return 'ishell $ ' end";
+	Ish_lua_run(ish, lua_code);
+
+	char *rc_path = ish_strcat_alloc(getenv("HOME"), "/.ishrc.lua");
+
+	char *rc_code = ish_fs_read(rc_path, NULL);
+	if (rc_code) {
+		Ish_lua_run(ish, rc_code);
+
+		free(rc_code);
 	}
 
-	char prompt[PROMPT_LENGTH] = {0};
+	free(rc_path);
+}
 
+void Ish_shell_main(Ish *ish) {
 	bool flag = true;
 	while (flag) {
+		char cwd[512];
 		getcwd(cwd, sizeof(cwd));
-		snprintf(prompt, PROMPT_LENGTH, "ish %s $ ", cwd);
+		const char *prompt = Ish_get_prompt(ish);
 
 		char *input = readline(prompt);
 		if (strcmp(input, "exit") == 0) {
 			flag = false;
+		} else if (strcmp(input, "reload") == 0) {
+			Ish_reload_config(ish);
+			puts("config reloaded");
+		} else if (*input == '!') { // execute lua
+			char *lua_code = input + 1;
+			if (luaL_dostring(ish->L, lua_code) != LUA_OK) {
+				fprintf(stderr, "lua error: %s\n", lua_tostring(ish->L, -1));
+				lua_pop(ish->L, 1); // Remove error message from the stack
+			}
+		} else {
+			IshArena arena = IshArena_new(512);
+
+			IshArena_dispose(&arena);
 		}
 
 		if (input)
 			free(input);
 	}
+}
 
-	lua_close(L);
-
-	return 0;
+void Ish_dispose(Ish *ish) {
+	lua_close(ish->L);
 }
