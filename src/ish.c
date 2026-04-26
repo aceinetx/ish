@@ -77,9 +77,9 @@ void Ish_shell_main(Ish *ish) {
 			char *lua_code = input + 1;
 			Ish_lua_run(ish, lua_code);
 		} else {
-			IshArena arena = IshArena_new(512);
-
-			IshArena_dispose(&arena);
+			char str[2048];
+			snprintf(str, sizeof str, "sh \"%s\"", input);
+			Ish_lua_run(ish, str);
 		}
 
 		if (input)
