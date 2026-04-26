@@ -31,6 +31,7 @@ const char *Ish_get_prompt(Ish *ish) {
 	}
 	return prompt;
 }
+
 void Ish_lua_run(Ish *ish, const char *code) {
 	if (luaL_dostring(ish->L, code) != LUA_OK) {
 		fprintf(stderr, "lua error: %s\n", lua_tostring(ish->L, -1));
@@ -74,10 +75,7 @@ void Ish_shell_main(Ish *ish) {
 			puts("config reloaded");
 		} else if (*input == '!') { // execute lua
 			char *lua_code = input + 1;
-			if (luaL_dostring(ish->L, lua_code) != LUA_OK) {
-				fprintf(stderr, "lua error: %s\n", lua_tostring(ish->L, -1));
-				lua_pop(ish->L, 1); // Remove error message from the stack
-			}
+			Ish_lua_run(ish, lua_code);
 		} else {
 			IshArena arena = IshArena_new(512);
 

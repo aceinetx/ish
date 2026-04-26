@@ -27,7 +27,7 @@ char *ish_fs_read(const char *filename, long *outSize) {
 		return NULL;
 	}
 
-	buffer = (char *)malloc(fileSize);
+	buffer = (char *)malloc(fileSize + 1);
 	if (!buffer) {
 		fclose(file);
 		return NULL;
@@ -39,6 +39,7 @@ char *ish_fs_read(const char *filename, long *outSize) {
 		fclose(file);
 		return NULL;
 	}
+	buffer[fileSize] = 0;
 
 	fclose(file);
 
