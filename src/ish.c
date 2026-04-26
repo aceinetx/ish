@@ -42,8 +42,12 @@ void Ish_reload_config(Ish *ish) {
 		lua_close(ish->L);
 	ish->L = luaL_newstate();
 	luaL_openlibs(ish->L);
+	Ish_lua_openstd(ish);
 
-	const char *lua_code = "function prompt() return 'ishell $ ' end";
+	const char lua_code[] = {
+#include <default.lua.h>
+			, 0};
+
 	Ish_lua_run(ish, lua_code);
 
 	char *rc_path = ish_strcat_alloc(getenv("HOME"), "/.ishrc.lua");

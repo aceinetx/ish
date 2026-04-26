@@ -14,8 +14,10 @@ set_languages("c99")
 target("ish")
 	set_kind("binary")
 
+	add_rules("utils.bin2c", {extensions = {".lua"}})
+
 	add_includedirs("include")
-	add_files("src/*.c")
+	add_files("src/*.c", "src/*.lua")
 
 	add_packages("lua", "readline")
 target_end()
