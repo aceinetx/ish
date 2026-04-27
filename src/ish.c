@@ -101,18 +101,19 @@ void Ish_shell_execline(Ish *ish, const char *s) {
 
 		if (status != LUA_OK) {
 			fprintf(stderr, "lua error: %s\n", lua_tostring(ish->L, -1));
-			lua_pop(ish->L, 1);
+			goto end;
 		}
 
 		if (lua_pcall(ish->L, 0, 1, 0) != LUA_OK) {
 			fprintf(stderr, "lua error: %s\n", lua_tostring(ish->L, -1));
-			lua_pop(ish->L, 1);
+			goto end;
 		}
 
 		if (!lua_isnil(ish->L, -1)) {
 			printf("%s\n", luaL_tolstring(ish->L, -1, NULL));
-			lua_pop(ish->L, 1);
 		}
+
+	end:
 		lua_pop(ish->L, 1);
 	} else {
 		lua_getglobal(ish->L, "sh");
