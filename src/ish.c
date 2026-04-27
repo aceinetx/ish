@@ -26,11 +26,10 @@ const char *Ish_get_prompt(Ish *ish) {
 	} else {
 		if (lua_pcall(ish->L, 0, 1, 0) != LUA_OK) {
 			fprintf(stderr, "lua error: %s\n", lua_tostring(ish->L, -1));
-			lua_pop(ish->L, 1);
 		} else {
 			prompt = lua_tostring(ish->L, lua_gettop(ish->L));
-			lua_pop(ish->L, 1);
 		}
+		lua_pop(ish->L, 1);
 	}
 	return prompt;
 }
