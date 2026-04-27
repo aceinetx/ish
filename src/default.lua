@@ -62,6 +62,10 @@ function prompt()
 	return string.gsub(s, os.getenv("HOME"), "~")
 end
 
+function pass()
+
+end
+
 ish_aliases["ga"] = "git add"
 ish_aliases["gc"] = "git commit"
 ish_aliases["gp"] = "git push"
