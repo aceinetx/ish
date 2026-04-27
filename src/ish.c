@@ -5,8 +5,6 @@
 #include <lualib.h>
 #include <readline/history.h>
 #include <readline/readline.h>
-#include <setjmp.h>
-#include <signal.h>
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -39,6 +37,18 @@ const char *Ish_get_history_path(Ish *ish) {
 	return path;
 }
 
+int Ish_get_return_code(Ish *ish) {
+	lua_getglobal(ish->L, "ish");
+	lua_getfield(ish->L, -1, "returncode");
+	lua_pop(ish->L, -2);
+	if (lua_isnumber(ish->L, -1)) {
+		lua_pop(ish->L, -1);
+		return lua_tonumber(ish->L, -1);
+	}
+	lua_pop(ish->L, -1);
+	return 0;
+}
+
 void Ish_lua_run(Ish *ish, const char *code) {
 	if (luaL_dostring(ish->L, code) != LUA_OK) {
 		fprintf(stderr, "lua error: %s\n", lua_tostring(ish->L, -1));
@@ -53,11 +63,12 @@ void Ish_reload_config(Ish *ish) {
 	luaL_openlibs(ish->L);
 	Ish_lua_openstd(ish);
 
-	const char lua_code[] = {
+	Ish_lua_run(ish, (const char[]){
+#include <runtime.lua.h>
+											 , 0});
+	Ish_lua_run(ish, (const char[]){
 #include <default.lua.h>
-			, 0};
-
-	Ish_lua_run(ish, lua_code);
+											 , 0});
 
 	char *rc_path = ish_strcat_alloc(getenv("HOME"), "/.ishrc.lua");
 
@@ -79,7 +90,26 @@ void Ish_shell_execline(Ish *ish, const char *s) {
 		puts("config reloaded");
 	} else if (*s == '!') { // execute lua
 		const char *lua_code = s + 1;
-		Ish_lua_run(ish, lua_code);
+		const char *code = lua_pushfstring(ish->L, "return %s", lua_code);
+
+		int status = luaL_loadstring(ish->L, code);
+		lua_remove(ish->L, -2);
+
+		if (status != LUA_OK) {
+			fprintf(stderr, "lua error: %s\n", lua_tostring(ish->L, -1));
+			lua_pop(ish->L, 1);
+		}
+
+		if (lua_pcall(ish->L, 0, 1, 0) != LUA_OK) {
+			fprintf(stderr, "lua error: %s\n", lua_tostring(ish->L, -1));
+			lua_pop(ish->L, 1);
+		}
+
+		if (!lua_isnil(ish->L, -1)) {
+			printf("%s\n", luaL_tolstring(ish->L, -1, NULL));
+			lua_pop(ish->L, 1);
+		}
+		lua_pop(ish->L, 1);
 	} else {
 		lua_getglobal(ish->L, "sh");
 		if (lua_isnil(ish->L, 1)) {

@@ -17,7 +17,7 @@ target("ish")
 	add_rules("utils.bin2c", {extensions = {".lua"}})
 
 	add_includedirs("include")
-	add_files("src/*.c", "src/*.lua")
+	add_files("src/*.c", "src/lua/*.lua")
 
 	add_packages("lua", "readline")
 target_end()

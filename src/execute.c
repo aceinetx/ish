@@ -3,15 +3,14 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-void ish_execute(char **args) {
+int ish_execute(char **args) {
 	pid_t pid = fork();
 	if (pid < 0) {
-		return;
+		return -1;
 	} else if (pid == 0) {
 		// Child process: use default signal handling
 		signal(SIGINT, SIG_DFL);
-		execvp(args[0], args);
-		return;
+		return execvp(args[0], args);
 	} else {
 		// Parent process: ignore SIGINT while waiting
 		signal(SIGINT, SIG_IGN);
@@ -20,4 +19,5 @@ void ish_execute(char **args) {
 		// Restore default signal handling
 		signal(SIGINT, SIG_DFL);
 	}
+	return -1;
 }

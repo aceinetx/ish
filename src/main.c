@@ -1,6 +1,8 @@
 #include "util.h"
 #include <assert.h>
 #include <ish.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 char *args_shift(int *argc, char ***argv) {

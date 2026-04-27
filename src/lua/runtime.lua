@@ -1,4 +1,8 @@
-function ish_split(inputstr, sep)
+ish.BOLD_PURPLE = string.char(27) .. "[1;35m"
+ish.BOLD_HIGH_RED = string.char(27) .. "[1;91m"
+ish.RESET = string.char(27) .. "[0m"
+
+ish.split = function(inputstr, sep)
 	if sep == nil then
 		sep = "%s"
 	end
@@ -11,9 +15,19 @@ function ish_split(inputstr, sep)
 	return t
 end
 
+ish.execute = function(cmd)
+	local success, reason, code = os.execute(cmd)
+	ish.returncode = code
+	return success, reason, code
+end
+
+ish.addpath = function(path)
+	ish.setenv("PATH", os.getenv("PATH") .. ":" .. path)
+end
+
 function expand_aliases(shellcode)
-	args = ish_split(shellcode, " ")
-	alias = ish_aliases[args[1]]
+	args = ish.split(shellcode, " ")
+	alias = ish.aliases[args[1]]
 	if alias ~= nil then
 		args[1] = alias
 		new = table.concat(args, " ")
@@ -33,16 +47,24 @@ function expand_all_aliases(shellcode)
 	return shellcode
 end
 
+function columns()
+	return io.popen("tput cols"):read("*n")
+end
+
+function lines()
+	return io.popen("tput lines"):read("*n")
+end
+
 function sh(shellcode)
 	shellcode = expand_all_aliases(shellcode)
 
-	args = ish_split(shellcode, " ")
+	args = ish.split(shellcode, " ")
 	if args[1] == "cd" then
 		if args[2] == nil then
-			return ish_chdir(os.getenv("HOME"))
+			return ish.chdir(os.getenv("HOME"))
 		end
 		args[2] = string.gsub(args[2], "~", os.getenv("HOME"))
-		return ish_chdir(args[2])
+		return ish.chdir(args[2])
 	end
 
 	if _G[args[1]] ~= nil then
@@ -53,26 +75,14 @@ function sh(shellcode)
 		end
 	end
 
-	return os.execute(shellcode)
-end
-
-function prompt() 
-	wd = string.char(27) .. "[1;35m" .. ish_getcwd() .. string.char(27) .. "[0m\n"
-	s = wd .. "$ "
-	return string.gsub(s, os.getenv("HOME"), "~")
+	ish.execute(shellcode)
 end
 
 function pass()
 
 end
 
-if ish_istermux() and not ish_exists("/data/data/com.termux/files/home/.config/termux/termux.properties") and not ish_exists("/data/data/com.termux/files/home/.termux/termux.properties") then
+if ish.istermux() and not ish.exists("/data/data/com.termux/files/home/.config/termux/termux.properties") and not ish.exists("/data/data/com.termux/files/home/.termux/termux.properties") then
 	sh "mkdir -p /data/data/com.termux/files/home/.termux"
 	sh "cp /data/data/com.termux/files/usr/share/examples/termux/termux.properties /data/data/com.termux/files/home/.termux/"
 end
-
-ish_aliases["ga"] = "git add"
-ish_aliases["gc"] = "git commit"
-ish_aliases["gp"] = "git push"
-ish_aliases["md"] = "mkdir -p"
-ish_aliases["rd"] = "rmdir"
