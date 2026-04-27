@@ -11,7 +11,18 @@ function ish_split(inputstr, sep)
 	return t
 end
 
+function expand_aliases(shellcode)
+	args = ish_split(shellcode, " ")
+	alias = ish_aliases[args[1]]
+	if alias ~= nil then
+		args[1] = alias
+	end
+	new = table.concat(args, " ")
+	return new
+end
+
 function sh(shellcode)
+	shellcode = expand_aliases(shellcode)
 	args = ish_split(shellcode, " ")
 	if args[1] == "cd" then
 		if args[2] == nil then
@@ -29,3 +40,7 @@ function prompt()
 	s = wd .. "$ "
 	return string.gsub(s, os.getenv("HOME"), "~")
 end
+
+ish_aliases["ga"] = "git add"
+ish_aliases["gc"] = "git commit"
+ish_aliases["gp"] = "git push"
