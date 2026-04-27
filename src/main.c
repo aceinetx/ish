@@ -1,10 +1,31 @@
 #include "util.h"
+#include <assert.h>
 #include <ish.h>
 #include <unistd.h>
 
+char *args_shift(int *argc, char ***argv) {
+	assert(*argc > 0 && "argc <= 0");
+	--(*argc);
+	return *(*argv)++;
+}
+
+#define args_shift(argc, argv) args_shift(&(argc), &(argv))
+
 int main(int argc, char **argv) {
 	Ish ish = Ish_new();
-	if (argc > 1) {
+	const char *script = NULL;
+
+	args_shift(argc, argv);
+	while (argc) {
+		const char *arg = args_shift(argc, argv);
+		if (!strcmp(arg, "-l")) {
+			// todo
+		} else {
+			script = arg;
+		}
+	}
+
+	if (script) {
 		char *code = ish_fs_read(argv[1], NULL);
 		if (!code) {
 			puts("failed to read script");

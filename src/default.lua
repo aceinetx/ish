@@ -66,6 +66,11 @@ function pass()
 
 end
 
+if ish_istermux() and not ish_exists("/data/data/com.termux/files/home/.config/termux/termux.properties") and not ish_exists("/data/data/com.termux/files/home/.termux/termux.properties") then
+	sh "mkdir -p /data/data/com.termux/files/home/.termux"
+	sh "cp /data/data/com.termux/files/usr/share/examples/termux/termux.properties /data/data/com.termux/files/home/.termux/"
+end
+
 ish_aliases["ga"] = "git add"
 ish_aliases["gc"] = "git commit"
 ish_aliases["gp"] = "git push"
