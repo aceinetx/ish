@@ -22,4 +22,7 @@ void Ish_lua_openstd(Ish *ish) {
 	lua_setglobal(ish->L, "ish_getcwd");
 	lua_pushcfunction(ish->L, Ish_lua_std_chdir);
 	lua_setglobal(ish->L, "ish_chdir");
+
+	lua_newtable(ish->L);
+	lua_setglobal(ish->L, "ish_aliases");
 }

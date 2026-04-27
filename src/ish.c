@@ -77,9 +77,14 @@ void Ish_shell_main(Ish *ish) {
 			char *lua_code = input + 1;
 			Ish_lua_run(ish, lua_code);
 		} else {
-			char str[2048];
-			snprintf(str, sizeof str, "sh \"%s\"", input);
-			Ish_lua_run(ish, str);
+			lua_getglobal(ish->L, "sh");
+			if (lua_isnil(ish->L, 1)) {
+				puts("no sh function");
+				lua_pop(ish->L, 1);
+			} else {
+				lua_pushstring(ish->L, input);
+				lua_call(ish->L, 1, 0);
+			}
 		}
 
 		if (input)

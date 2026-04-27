@@ -14,6 +14,10 @@ end
 function sh(shellcode)
 	args = ish_split(shellcode, " ")
 	if args[1] == "cd" then
+		if args[2] == nil then
+			return ish_chdir(os.getenv("HOME"))
+		end
+		args[2] = string.gsub(args[2], "~", os.getenv("HOME"))
 		return ish_chdir(args[2])
 	end
 
