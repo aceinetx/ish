@@ -45,6 +45,14 @@ function sh(shellcode)
 		return ish_chdir(args[2])
 	end
 
+	if _G[args[1]] ~= nil then
+		func = _G[args[1]]
+		if type(func) == "function" then
+			func(args)
+			return
+		end
+	end
+
 	return os.execute(shellcode)
 end
 
