@@ -16,13 +16,26 @@ function expand_aliases(shellcode)
 	alias = ish_aliases[args[1]]
 	if alias ~= nil then
 		args[1] = alias
+		new = table.concat(args, " ")
+		return new
 	end
-	new = table.concat(args, " ")
-	return new
+	return nil
+end
+
+function expand_all_aliases(shellcode)
+	while true do
+		new_shellcode = expand_aliases(shellcode)
+		if new_shellcode == nil then
+			break
+		end
+		shellcode = new_shellcode
+	end
+	return shellcode
 end
 
 function sh(shellcode)
-	shellcode = expand_aliases(shellcode)
+	shellcode = expand_all_aliases(shellcode)
+
 	args = ish_split(shellcode, " ")
 	if args[1] == "cd" then
 		if args[2] == nil then
@@ -44,3 +57,5 @@ end
 ish_aliases["ga"] = "git add"
 ish_aliases["gc"] = "git commit"
 ish_aliases["gp"] = "git push"
+ish_aliases["md"] = "mkdir -p"
+ish_aliases["rd"] = "rmdir"
