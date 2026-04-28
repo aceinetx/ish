@@ -48,11 +48,17 @@ function expand_all_aliases(shellcode)
 end
 
 function columns()
-	return io.popen("tput cols"):read("*n")
+	cmd = io.popen("tput cols")
+	n = cmd:read("*n")
+	cmd:close()
+	return n
 end
 
 function lines()
-	return io.popen("tput lines"):read("*n")
+	cmd = io.popen("tput lines")
+	n = cmd:read("*n")
+	cmd:close()
+	return n
 end
 
 function sh(shellcode)
