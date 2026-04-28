@@ -109,9 +109,7 @@ function sh(shellcode)
 	ish.execute(shellcode)
 end
 
-function pass()
-
-end
+function pass() end
 
 if ish.istermux() and not ish.exists("/data/data/com.termux/files/home/.config/termux/termux.properties") and not ish.exists("/data/data/com.termux/files/home/.termux/termux.properties") then
 	sh "mkdir -p /data/data/com.termux/files/home/.termux"
