@@ -16,10 +16,6 @@ function ls(args)
 	ish.execute(table.concat(args, " "))
 end
 
-ish.aliases["ga"] = "git add"
-ish.aliases["gc"] = "git commit"
-ish.aliases["gp"] = "git push"
 ish.aliases["md"] = "mkdir -p"
 ish.aliases["rd"] = "rmdir"
-ish.aliases["nv"] = "nvim"
 ish.aliases["l"] = "ls -l"
