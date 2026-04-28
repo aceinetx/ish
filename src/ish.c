@@ -81,6 +81,9 @@ void Ish_reload_config(Ish *ish) {
 	Ish_lua_run(ish, (const char[]){
 #include <xmake.lua.h>
 											 , 0});
+	Ish_lua_run(ish, (const char[]){
+#include <termux.lua.h>
+											 , 0});
 
 	char *rc_path = ish_strcat_alloc(getenv("HOME"), "/.ishrc.lua");
 
