@@ -1,6 +1,7 @@
 ish.BOLD_PURPLE = string.char(27) .. "[1;35m"
 ish.BOLD_HIGH_RED = string.char(27) .. "[1;91m"
 ish.RESET = string.char(27) .. "[0m"
+ish.plugins = {}
 
 ish.split = function(inputstr, sep)
 	if sep == nil then
@@ -23,6 +24,30 @@ end
 
 ish.addpath = function(path)
 	ish.setenv("PATH", os.getenv("PATH") .. ":" .. path)
+end
+
+ish.enableplugin = function(plugin)
+	func = ish.plugins[plugin]
+	if func == nil then
+		print("config error: no such plugin " .. plugin)
+		return
+	end
+	func()
+end
+
+ish.hasprogram = function(name)
+	for _, dir_from_path in ipairs(ish.split(os.getenv("PATH"), ":")) do
+		path = dir_from_path
+		if string.sub(path, -1) == "/" then
+			path = path:sub(1, -2)
+		end
+		path = path .. "/" .. name
+
+		if ish.exists(path) then
+			return true
+		end
+	end
+	return false
 end
 
 function expand_aliases(shellcode)
@@ -65,20 +90,20 @@ function sh(shellcode)
 	shellcode = expand_all_aliases(shellcode)
 
 	args = ish.split(shellcode, " ")
-	if args[1] == "cd" then
-		if args[2] == nil then
-			return ish.chdir(os.getenv("HOME"))
-		end
-		args[2] = string.gsub(args[2], "~", os.getenv("HOME"))
-		return ish.chdir(args[2])
-	end
-
 	if _G[args[1]] ~= nil then
 		func = _G[args[1]]
 		if type(func) == "function" then
 			func(args)
 			return
 		end
+	end
+
+	if args[1] == "cd" then
+		if args[2] == nil then
+			return ish.chdir(os.getenv("HOME"))
+		end
+		args[2] = string.gsub(args[2], "~", os.getenv("HOME"))
+		return ish.chdir(args[2])
 	end
 
 	ish.execute(shellcode)
