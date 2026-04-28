@@ -17,12 +17,12 @@ ish.plugins["zoxide"] = function()
 	end
 
 	_G["z"] = function(args)
-		table.remove(args, 1)
-		path = table.concat(args, " ")
-		if path == nil then
+		if args[2] == nil then
 			ish.chdir(os.getenv("HOME"))
 			return
 		end
+		table.remove(args, 1)
+		path = table.concat(args, " ")
 
 		if ish.exists(path) then
 			__zoxide_add(path)
