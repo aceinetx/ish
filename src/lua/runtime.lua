@@ -89,11 +89,23 @@ end
 function sh(shellcode)
 	shellcode = expand_all_aliases(shellcode)
 
-	args = ish.split(shellcode, " ")
+	local args = ish.split(shellcode, " ")
 	if _G[args[1]] ~= nil then
-		func = _G[args[1]]
+		local func = _G[args[1]]
 		if type(func) == "function" then
-			func(args)
+			local ret = func(args)
+			ish.returncode = 0
+
+			if ret == nil then
+				return
+			end
+
+			if type(ret) == "number" then
+				ish.returncode = ret
+			else
+				print(ret)
+			end
+
 			return
 		end
 	end

@@ -28,9 +28,9 @@ int main(int argc, char **argv) {
 	}
 
 	if (script) {
-		char *code = ish_fs_read(argv[1], NULL);
+		char *code = ish_fs_read(script, NULL);
 		if (!code) {
-			puts("failed to read script");
+			printf("failed to read %s\n", script);
 			goto exit;
 		}
 		Ish_lua_run(&ish, code);

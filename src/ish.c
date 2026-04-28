@@ -130,7 +130,12 @@ void Ish_shell_execline(Ish *ish, const char *s) {
 			lua_pop(ish->L, 1);
 		} else {
 			lua_pushstring(ish->L, s);
-			lua_call(ish->L, 1, 0);
+
+			if (lua_pcall(ish->L, 1, 1, 0) != LUA_OK) {
+				fprintf(stderr, "lua error: %s\n", lua_tostring(ish->L, -1));
+			}
+
+			lua_pop(ish->L, 1);
 		}
 	}
 }
