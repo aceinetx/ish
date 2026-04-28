@@ -17,7 +17,8 @@ ish.plugins["zoxide"] = function()
 	end
 
 	_G["z"] = function(args)
-		path = args[2]
+		table.remove(args, 1)
+		path = table.concat(args, " ")
 		if path == nil then
 			ish.chdir(os.getenv("HOME"))
 			return
