@@ -50,10 +50,14 @@ ish.hasprogram = function(name)
 	return false
 end
 
-function expand_aliases(shellcode)
+function expand_aliases(shellcode, marked)
 	args = ish.split(shellcode, " ")
+	if marked[args[1]] == true then
+		return nil
+	end
 	alias = ish.aliases[args[1]]
 	if alias ~= nil then
+		marked[args[1]] = true
 		args[1] = alias
 		new = table.concat(args, " ")
 		return new
@@ -62,8 +66,9 @@ function expand_aliases(shellcode)
 end
 
 function expand_all_aliases(shellcode)
+	marked = {}
 	while true do
-		new_shellcode = expand_aliases(shellcode)
+		new_shellcode = expand_aliases(shellcode, marked)
 		if new_shellcode == nil then
 			break
 		end
