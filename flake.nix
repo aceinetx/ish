@@ -2,7 +2,7 @@
   description = "ish";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -18,11 +18,26 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in
       {
+        packages.default = pkgs.stdenv.mkDerivation {
+          name = "ish";
+          version = "1.0.0";
+          src = self;
+
+          buildInputs = with pkgs; [
+            stdenv.cc.cc
+            cmake
+            pkg-config
+            readline
+            ncurses
+            lua
+          ];
+        };
+
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            gcc
+            stdenv.cc.cc
+            cmake
             pkg-config
-            xmake
             readline
             ncurses
             lua
