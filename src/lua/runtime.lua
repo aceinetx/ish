@@ -50,6 +50,19 @@ ish.hasprogram = function(name)
 	return false
 end
 
+ish.inspect = function(value)
+	if type(value) == "table" then
+		out = "{ "
+		for k, v in pairs(value) do
+			out = out .. k .. " = " .. ish.inspect(v) .. ", "
+		end
+		out = out.."}"
+		return out
+	else
+		return tostring(value)
+	end
+end
+
 function expand_aliases(shellcode, marked)
 	args = ish.split(shellcode, " ")
 	if marked[args[1]] == true then
