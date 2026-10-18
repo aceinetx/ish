@@ -29,8 +29,8 @@ const char *Ish_get_prompt(Ish *ish) {
 		} else {
 			prompt = lua_tostring(ish->L, lua_gettop(ish->L));
 		}
-		lua_pop(ish->L, 1);
 	}
+	lua_pop(ish->L, 1);
 	return prompt;
 }
 
