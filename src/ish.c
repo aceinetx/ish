@@ -88,13 +88,13 @@ void Ish_reload_config(Ish *ish) {
 	char *rc_path = ish_strcat_alloc(getenv("HOME"), "/.ishrc.lua");
 
 	char *rc_code = ish_fs_read(rc_path, NULL);
+	free(rc_path);
+
 	if (rc_code) {
 		Ish_lua_run(ish, rc_code);
 
 		free(rc_code);
 	}
-
-	free(rc_path);
 }
 
 void Ish_shell_execline(Ish *ish, const char *s) {
