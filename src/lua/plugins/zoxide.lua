@@ -32,5 +32,5 @@ ish.plugins["zoxide"] = function()
 		ish.chdir(__zoxide_query(path))
 	end
 
-	_G["cd"] = _G["z"]
+	ish.aliases["cd"] = "z"
 end
