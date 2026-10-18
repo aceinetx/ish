@@ -1,4 +1,4 @@
-function prompt() 
+function prompt()
 	returncode_string = ""
 	if ish.returncode ~= 0 and ish.returncode then
 		returncode_string = tostring(ish.returncode)
@@ -11,11 +11,7 @@ function prompt()
 	return s
 end
 
-function ls(args)
-	table.insert(args, 2, "--color=tty")
-	ish.execute(table.concat(args, " "))
-end
-
 ish.aliases["md"] = "mkdir -p"
 ish.aliases["rd"] = "rmdir"
+ish.aliases["ls"] = "ls --color=tty"
 ish.aliases["l"] = "ls -l"

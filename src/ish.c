@@ -9,12 +9,12 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 Ish Ish_new() {
 	Ish ish = (Ish){.L = NULL};
 	Ish_reload_config(&ish);
-	read_history(Ish_get_history_path(&ish));
 	return ish;
 }
 
@@ -163,6 +163,5 @@ void Ish_shell_main(Ish *ish) {
 }
 
 void Ish_dispose(Ish *ish) {
-	write_history(Ish_get_history_path(ish));
 	lua_close(ish->L);
 }

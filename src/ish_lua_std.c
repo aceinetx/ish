@@ -1,5 +1,6 @@
 #include "ish.h"
 #include <assert.h>
+#include <readline/readline.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -40,11 +41,26 @@ static int Ish_lua_std_setenv(lua_State *L) {
 	return 1;
 }
 
+static int Ish_lua_std_input(lua_State *L) {
+	char *input = readline("");
+
+	lua_pushstring(L, input ? input : "");
+
+	if (input)
+		free(input);
+
+	return 1;
+}
+
 void Ish_lua_openstd(Ish *ish) {
 	lua_newtable(ish->L);
 
-	const lua_CFunction functions[] = {Ish_lua_std_getcwd, Ish_lua_std_chdir, Ish_lua_std_istermux, Ish_lua_std_exists, Ish_lua_std_setenv};
-	const char *names[] = {"getcwd", "chdir", "istermux", "exists", "setenv"};
+	const lua_CFunction functions[] = {
+			Ish_lua_std_getcwd, Ish_lua_std_chdir, Ish_lua_std_istermux, Ish_lua_std_exists, Ish_lua_std_setenv, Ish_lua_std_input,
+	};
+	const char *names[] = {
+			"getcwd", "chdir", "istermux", "exists", "setenv", "input",
+	};
 	assert(sizeof functions / sizeof functions[0] == sizeof names / sizeof names[0]);
 	for (int i = 0; i < sizeof functions / sizeof functions[0]; i++) {
 		lua_pushcfunction(ish->L, functions[i]);

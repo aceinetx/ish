@@ -31,7 +31,7 @@ endif()
 file(GLOB_RECURSE LUA_SOURCES CONFIGURE_DEPENDS "src/lua/*.lua" "src/lua/**/*.lua")
 foreach(FILE ${LUA_SOURCES})
 	get_filename_component(FILE_BASE ${FILE} NAME)
-	bin2h(SOURCE_FILE ${FILE} HEADER_FILE "${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.h")
+	bin2h_configure(SOURCE_FILE ${FILE} HEADER_FILE "${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.h")
 endforeach()
 target_include_directories(ish PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 #endregion

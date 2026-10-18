@@ -104,6 +104,21 @@ function lines()
 	return n
 end
 
+local function _sh_execfunc(func)
+	local ret = func(args)
+	ish.returncode = 0
+
+	if ret == nil then
+		return
+	end
+
+	if type(ret) == "number" then
+		ish.returncode = ret
+	else
+		print(ret)
+	end
+end
+
 function sh(shellcode)
 	shellcode = expand_all_aliases(shellcode)
 
@@ -111,18 +126,7 @@ function sh(shellcode)
 	if _G[args[1]] ~= nil then
 		local func = _G[args[1]]
 		if type(func) == "function" then
-			local ret = func(args)
-			ish.returncode = 0
-
-			if ret == nil then
-				return
-			end
-
-			if type(ret) == "number" then
-				ish.returncode = ret
-			else
-				print(ret)
-			end
+			_sh_execfunc(func)
 
 			return
 		end
@@ -140,6 +144,15 @@ function sh(shellcode)
 end
 
 function pass() end
+
+function source(args)
+	filename = args[2]
+	if filename == nil then
+		print("source: expected filename as an argument")
+		return 1
+	end
+	return loadfile(filename)()
+end
 
 if ish.istermux() and not ish.exists("/data/data/com.termux/files/home/.config/termux/termux.properties") and not ish.exists("/data/data/com.termux/files/home/.termux/termux.properties") then
 	sh "mkdir -p /data/data/com.termux/files/home/.termux"
