@@ -1,3 +1,5 @@
+-- Necessary script that should get run at startup
+
 ish.BOLD_PURPLE = string.char(27) .. "[1;35m"
 ish.BOLD_HIGH_RED = string.char(27) .. "[1;91m"
 ish.RESET = string.char(27) .. "[0m"
@@ -16,12 +18,15 @@ ish.split = function(inputstr, sep)
 	return t
 end
 
+-- Run a shell command
+-- Does not expand aliases, use sh() for that
 ish.execute = function(cmd)
 	local success, reason, code = os.execute(cmd)
 	ish.returncode = code
 	return success, reason, code
 end
 
+-- Add a path to $PATH
 ish.addpath = function(path)
 	ish.setenv("PATH", os.getenv("PATH") .. ":" .. path)
 end
@@ -119,6 +124,7 @@ local function _sh_execfunc(func)
 	end
 end
 
+-- Run a shell command
 function sh(shellcode)
 	shellcode = expand_all_aliases(shellcode)
 
